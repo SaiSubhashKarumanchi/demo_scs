@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.http.HttpStatus;
@@ -25,7 +28,7 @@ public class RestControllerForJavaTechnical {
     private static ReentrantLock lockForItems = new ReentrantLock();
     private static ReentrantLock lockForItemz = new ReentrantLock();
     /* End can't be changed */
-
+    private ExecutorService executorService = Executors.newFixedThreadPool(5);
     @GetMapping(value = "api/v1/throwException", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> testALock() {
         /* Can't be changed */
@@ -72,6 +75,13 @@ public class RestControllerForJavaTechnical {
         i++;
         mapOfInts.put(intId, Integer.valueOf(i));
         /* End can't be changed */
+        RestControllerForJavaTechnical controller = new RestControllerForJavaTechnical();
+        Future<Integer>[] futures = new Future[10];
+        futures[i] = controller.executorService.submit(() -> {
+                ResponseEntity<Object> response = controller.incInt(intId);
+                return (int) response.getBody();
+            });
+        controller.executorService.shutdown();
 
         return new ResponseEntity<>(Integer.valueOf(i), HttpStatus.OK);
     }
