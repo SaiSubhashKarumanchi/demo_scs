@@ -103,7 +103,15 @@ public class RestControllerForItems {
      */
     @GetMapping(value = "api/v1/items/sort", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Item>> getItemsSort() {
-        return null;
+        final List<Item> itemsList = new ArrayList<Item>();
+
+        for (Map.Entry<String, Item> mapEntry: items.entrySet()) {
+            itemsList.add(mapEntry.getValue());
+        }
+        Comparator<Item> byPrice = Comparator.comparing(Item::getPrice).thenComparing((Item::getName));
+        Collections.sort(itemsList,byPrice);
+
+        return new ResponseEntity<>(itemsList, HttpStatus.OK);
     }
 
     /**
@@ -143,3 +151,4 @@ public class RestControllerForItems {
     }
 
 }
+
