@@ -96,7 +96,7 @@ public class RestControllerForItems {
      */
     @GetMapping(value = "api/v1/items", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getItems() {
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(items,HttpStatus.OK);
     }
 
     /**
