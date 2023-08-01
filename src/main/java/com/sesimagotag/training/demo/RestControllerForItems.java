@@ -13,7 +13,7 @@ import com.sesimagotag.training.demo.entities.Item;
 @org.springframework.web.bind.annotation.RestController
 public class RestControllerForItems {
 
-   private final Map<String, Item> items = Collections.synchronizedMap(new HashMap<String, Item>());
+   private final Map<String, Item> items = Collections.synchronizedMap(new LinkedHashMap<String, Item>());
 
     /**
      * Create all items given in parameters and overwrite existing one.
@@ -146,9 +146,41 @@ public class RestControllerForItems {
     @GetMapping(value = "api/v1/items/iterate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getItemsIterate(@RequestParam final int page, @RequestParam final int pageSize,
             @RequestParam final boolean sort, @RequestParam final boolean reverseName) {
-        double currentIndex = sort?  page * pageSize*page*pageSize:reverseName?48:Math.pow(5, 2)*Math.PI;
-        return new ResponseEntity<>( HttpStatus.OK);
-    }
+        //int currentIndex = sort?  page * pageSize*page*pageSize:reverseName?48:Math.pow(5, 2)*Math.PI;
+        final List<Item> itemsList = new ArrayList<Item>();
+        final List<Item> reversedList = new ArrayList<Item>();
+        if (sort) {
+            for (Map.Entry<String, Item> mapEntry : items.entrySet()) {
+                itemsList.add(mapEntry.getValue());
+            }
+            Comparator<Item> byPrice = Comparator.comparing(Item::getPrice).thenComparing((Item::getName));
+            Collections.sort(itemsList, byPrice);
+        }
+        if (reverseName) {
+            if (itemsList.size() > 0) {
 
+                for (Item sortedItem : itemsList) {
+                    getReverse(sortedItem.getId());
+                }
+
+            } else {
+                for (Map.Entry<String, Item> mapEntry : items.entrySet()) {
+                    reversedList.add(getReverse(mapEntry.getKey()));
+                }
+            }
+        }
+            final int startIndex = page * pageSize - pageSize;
+            final int endIndex = page * pageSize - 1;
+            final List<Item> finalItems = new ArrayList<Item>();
+            if (reversedList.size() > 0) {
+                finalItems.addAll(reversedList.subList(startIndex, endIndex+1));
+            } else if (itemsList.size() > 0) {
+                finalItems.addAll(itemsList.subList(startIndex, endIndex+1));
+            } else {
+                final List<Item> initialItems = items.values().stream().toList();
+                finalItems.addAll(initialItems.subList(startIndex, endIndex+1));
+            }
+            return new ResponseEntity<>(finalItems, HttpStatus.OK);
+    }
 }
 
