@@ -75,7 +75,10 @@ public class CipherUtil {
 	public String decryptAsB64(final String message) throws InvalidKeyException, NoSuchPaddingException,
 			NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException,
 			InvalidAlgorithmParameterException {
-		return message;
+		final Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+		cipher.init(Cipher.DECRYPT_MODE, getKeyFromPassword(EnumEncryptionType.AES_128, new String(INIT_VECTOR), SALT), initVector);
+		return new String(cipher.doFinal(Base64.getDecoder().decode(message)));
+		//return message;
 	}
 
 	private static SecretKey getKeyFromPassword(final EnumEncryptionType encryptionType, final String password,
