@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Item implements Serializable {
+public class Item implements Serializable,Cloneable {
     private String id;
     private BigDecimal price;
     private String name;
@@ -21,5 +21,9 @@ public class Item implements Serializable {
         this.id = item.id;
         this.price = new BigDecimal(item.price.toString());
         this.name = item.name;
+    }
+    @Override
+    public Item clone() throws CloneNotSupportedException {
+        return (Item) super.clone();
     }
 }

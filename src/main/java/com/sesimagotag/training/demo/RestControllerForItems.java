@@ -15,6 +15,7 @@ public class RestControllerForItems {
 
    private final Map<String, Item> items = Collections.synchronizedMap(new LinkedHashMap<String, Item>());
 
+
     /**
      * Create all items given in parameters and overwrite existing one.
      * 
@@ -57,8 +58,8 @@ public class RestControllerForItems {
      * @return return item with corresponding itemId and reverse its name in the
      *         result.
      */
-    public Item getReverse(final String itemId) {
-        Item item = items.get(itemId);
+    public Item getReverse(final String itemId) throws CloneNotSupportedException {
+        Item item = items.get(itemId).clone();
         final String name = item.getName();
         StringBuilder nameStringBuilder = new StringBuilder();
         nameStringBuilder.append(name);
@@ -73,7 +74,7 @@ public class RestControllerForItems {
      * @return all items with reverse name
      */
     @GetMapping(value = "api/v1/items/{itemId}/reverse", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getItemReverse(@PathVariable final String itemId) {
+    public ResponseEntity<Object> getItemReverse(@PathVariable final String itemId) throws CloneNotSupportedException {
 
         if(items.containsKey(itemId)){
             return new ResponseEntity<>(getReverse(itemId), HttpStatus.OK);
@@ -89,7 +90,7 @@ public class RestControllerForItems {
      * @return all items with reverse name
      */
     @GetMapping(value = "api/v1/items/reverse", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getItemsReverse() {
+    public ResponseEntity<Object> getItemsReverse() throws CloneNotSupportedException {
         final List<Item> reversedList = new ArrayList<Item>();
 
         for (Map.Entry<String, Item> mapEntry: items.entrySet()) {
@@ -145,7 +146,7 @@ public class RestControllerForItems {
      */
     @GetMapping(value = "api/v1/items/iterate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getItemsIterate(@RequestParam final int page, @RequestParam final int pageSize,
-            @RequestParam final boolean sort, @RequestParam final boolean reverseName) {
+            @RequestParam final boolean sort, @RequestParam final boolean reverseName) throws CloneNotSupportedException {
         //int currentIndex = sort?  page * pageSize*page*pageSize:reverseName?48:Math.pow(5, 2)*Math.PI;
         final List<Item> itemsList = new ArrayList<Item>();
         final List<Item> reversedList = new ArrayList<Item>();
