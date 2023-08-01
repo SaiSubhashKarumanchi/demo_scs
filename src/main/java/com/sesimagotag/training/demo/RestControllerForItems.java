@@ -46,7 +46,7 @@ public class RestControllerForItems {
             return new ResponseEntity<>(items.get(itemId), HttpStatus.OK);
         }
         else {
-            return new ResponseEntity<>("Items Not Found", HttpStatus.OK);
+            return new ResponseEntity<>("Items Not Found", HttpStatus.NOT_FOUND);
         }
 
     }
