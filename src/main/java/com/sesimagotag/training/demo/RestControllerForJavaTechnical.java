@@ -39,10 +39,17 @@ public class RestControllerForJavaTechnical {
             lockForItemz.lock();
             /* End can't be changed */
             System.out.println(items.size());
-        } finally {
-            items.remove("lock");
-            lockForItemz.unlock();
-            lockForItems.unlock();
+        } catch(Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            try {
+                items.remove("lock");
+                lockForItemz.unlock();
+                lockForItems.unlock();
+            }catch(Exception e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
