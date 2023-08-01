@@ -6,10 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import com.sesimagotag.training.demo.entities.Item;
 
@@ -44,8 +41,14 @@ public class RestControllerForItems {
      * @return return item with corresponding itemId
      */
     @GetMapping(value = "api/v1/items/{itemId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getItem(@RequestParam final String itemId) {
-        return null;
+    public ResponseEntity<Object> getItem(@PathVariable final String itemId) {
+        if(items.containsKey(itemId)){
+            return new ResponseEntity<>(items.get(itemId), HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>("Items Not Found", HttpStatus.OK);
+        }
+
     }
 
     /**
