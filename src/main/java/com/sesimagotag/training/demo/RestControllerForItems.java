@@ -53,12 +53,18 @@ public class RestControllerForItems {
 
     /**
      * Do not modify existing item list on the reverse operation.
-     * 
+     *
      * @return return item with corresponding itemId and reverse its name in the
      *         result.
      */
-    public ResponseEntity<Object> getItemReverse(@RequestParam final int itemId) {
-        return null;
+    public ResponseEntity<Object> getItemReverse(final String itemId) {
+        Item item = items.get(itemId);
+        final String name = item.getName();
+        StringBuilder nameStringBuilder = new StringBuilder();
+        nameStringBuilder.append(name);
+        nameStringBuilder.reverse();
+        item.setName(nameStringBuilder.toString());
+        return new ResponseEntity<>(item, HttpStatus.OK);
     }
 
     /**
@@ -66,9 +72,15 @@ public class RestControllerForItems {
      * 
      * @return all items with reverse name
      */
-    @GetMapping(value = "api/v1/items   /reverse", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getItemsReverse() {
-        return null;
+    @GetMapping(value = "api/v1/items/{itemId}/reverse", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getItemsReverse(@PathVariable final String itemId) {
+
+        if(items.containsKey(itemId)){
+            return getItemReverse(itemId);
+        }
+        else {
+            return new ResponseEntity<>("Items Not Found", HttpStatus.NOT_FOUND);
+        }
     }
 
     /**
